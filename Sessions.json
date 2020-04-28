@@ -1,0 +1,15 @@
+[
+  {
+    "sessionid": 838,
+    "userid": "25",
+    "locationid": "1",
+    "active": false,
+    "score": "32"
+  },
+  {
+    "sessionid": 3970,
+    "userid": "25",
+    "locationid": "2",
+    "active": true
+  }
+]
