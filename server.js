@@ -28,7 +28,7 @@ app.all('/register', function (req, res) {
     //writing the updated list
     fs.writeFile("Users.json", JSON.stringify(users, null, 2), err => {
 
-        // Checking for errors 
+        // Checking for errors
         if (err) {
             res.writeHead(501, { 'Content-Type': 'text/plain' });
             res.end("server encountered an error");
@@ -67,7 +67,7 @@ app.all('/associatefacebook', (req, res) => {
     }
 
 
-    var facebookID = req.query.facebookID;
+    var facebookID = req.query.facebookid;
     if (!facebookID || facebookID == null || facebookID == undefined) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
         res.end("missing parameter");
@@ -77,7 +77,7 @@ app.all('/associatefacebook', (req, res) => {
     //updating the user with the facebook ID and writing on file
     userFound.facebookID = facebookID;
     fs.writeFile("Users.json", JSON.stringify(users, null, 2), err => {
-        // Checking for errors 
+        // Checking for errors
         if (err) {
             res.writeHead(501, { 'Content-Type': 'text/plain' });
             res.end("server encountered an error");
@@ -180,14 +180,14 @@ app.all('/endsession', (req, res) => {
         return;
     }
 
-    
+
     var score = req.query.score;
     if (!score || score == null || score == undefined) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
         res.end("need the score to end the session");
         return;
     }
-    
+
     //marking session done and adding score
     sessionfound.active = false;
     sessionfound.score = score;
