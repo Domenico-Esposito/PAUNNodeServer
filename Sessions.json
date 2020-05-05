@@ -7,9 +7,10 @@
     "score": "32"
   },
   {
-    "sessionid": 3970,
-    "userid": "25",
+    "sessionid": 4143,
+    "userid": "640",
     "locationid": "2",
-    "active": true
+    "active": false,
+    "score": "25"
   }
 ]

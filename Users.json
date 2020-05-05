@@ -1,7 +1,11 @@
 [
   {
-    "id": 25,
-    "name": "vincenzo",
-    "facebookID": "vincenzoconte"
+    "id": 640,
+    "username": "vincenzo",
+    "facebookID": "vincenzo.conte"
+  },
+  {
+    "id": 780,
+    "username": "vincenzo"
   }
 ]
