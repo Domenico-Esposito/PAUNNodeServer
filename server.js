@@ -461,12 +461,12 @@ app.get('/endsession', (req, res) => {
 
     //check if the session exists and is associated with the given user
     let sessionfound = sessions.find((session) => {
-        return session.locationid == locationid && session.userid == userid;
+        return session.locationid == locationid && session.userid == userid && session.state == "playing";
     });
 
     if (!sessionfound || sessionfound == null || sessionfound == undefined) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
-        res.end("this session doesn't exists");
+        res.end("this session doesn't exists or cannot be ended");
         return;
     }
 
@@ -511,12 +511,13 @@ app.post('/endsession', (req, res) => {
 
     //check if the session exists and is associated with the given user
     let sessionfound = sessions.find((session) => {
-        return session.locationid == locationid && session.userid == userid;
+        
+        return session.locationid == locationid && session.userid == userid && session.state == "playing";
     });
 
     if (!sessionfound || sessionfound == null || sessionfound == undefined) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
-        res.end("this session doesn't exists");
+        res.end("this session doesn't exists or cannot be ended");
         return;
     }
 
