@@ -1,16 +1,9 @@
 [
   {
-    "sessionid": 838,
-    "userid": "25",
-    "locationid": "1",
-    "active": false,
-    "score": "32"
-  },
-  {
-    "sessionid": 4143,
+    "sessionid": 7586,
     "userid": "640",
     "locationid": "2",
-    "active": false,
-    "score": "25"
+    "state": "finished",
+    "GameState": "coins:10;dice:true;"
   }
 ]

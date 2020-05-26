@@ -196,7 +196,7 @@ app.post('/associatefacebook', (req, res) => {
 //start new session for a user at a location
 app.get('/startsession', (req, res) => {
     var userid = req.query.userid;
-    var locationID = req.query.locationnid;
+    var locationID = req.query.locationid;
     if (!userid || userid == null || userid == undefined || !locationID || locationID == null || locationID == undefined) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
         res.end("invalid parameters");
@@ -220,11 +220,11 @@ app.get('/startsession', (req, res) => {
 
     //check if the session already exists
     elementfound = sessions.some((session) => {
-        return session.userid == userid && session.locationid == locationID;
+        return session.locationid == locationID && (session.userid == userid || session.state != "finished");
     });
     if (elementfound) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
-        res.end("session already done");
+        res.end("cannot create a new session for this location");
         return;
     }
 
@@ -234,7 +234,7 @@ app.get('/startsession', (req, res) => {
         sessionid: sessionid,
         userid: userid,
         locationid: locationID,
-        active: true
+        state: "waiting"
     };
 
     sessions.push(session);
@@ -283,7 +283,7 @@ app.post('/startsession', (req, res) => {
 
     //check if the session already exists
     elementfound = sessions.some((session) => {
-        return session.userid == userid && session.locationid == locationID;
+        return session.locationid == locationID && (session.userid == userid || session.state != "finished");
     });
     if (elementfound) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
@@ -297,7 +297,7 @@ app.post('/startsession', (req, res) => {
         sessionid: sessionid,
         userid: userid,
         locationid: locationID,
-        active: true
+        state: "waiting"
     };
 
     sessions.push(session);
@@ -321,12 +321,137 @@ app.post('/startsession', (req, res) => {
 });
 
 
+//confirm a session setting his state to playing
+app.get('/confirmsession', (req, res) => {
+    var userid = req.query.userid;
+    var locationID = req.query.locationid;
+    if (!userid || userid == null || userid == undefined || !locationID || locationID == null || locationID == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("invalid parameters");
+        return;
+    }
+
+    const sessions = require('./Sessions');
+
+    let sessionFound = sessions.find((session) => {
+        return session.userid == userid && session.locationid == locationID && session.state == "waiting";
+    });
+    if (!sessionFound || sessionFound == null || sessionFound == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("session doesn't exist or has been already confirmed");
+        return;
+    }
+
+    sessionFound.state = "playing";
+
+    fs.writeFile("Sessions.json", JSON.stringify(sessions, null, 2), err => {
+        if (err) {
+            //error handling
+            res.writeHead(501, { 'Content-Type': 'text/plain' });
+            res.end("server encountered an error");
+            return;
+        }
+
+        //success
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end("session updated");
+    });
+});
+
+app.post('/confirmsession', (req, res) => {
+    var userid = req.body.userid;
+    var locationID = req.body.locationid;
+    if (!userid || userid == null || userid == undefined || !locationID || locationID == null || locationID == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("invalid parameters");
+        return;
+    }
+
+    const sessions = require('./Sessions');
+
+    let sessionFound = sessions.find((session) => {
+        return session.userid == userid && session.locationid == locationID && session.state == "waiting";
+    });
+    if (!sessionFound || sessionFound == null || sessionFound == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("session doesn't exist or has been already confirmed");
+        return;
+    }
+
+    sessionFound.state = "playing";
+
+    fs.writeFile("Sessions.json", JSON.stringify(sessions, null, 2), err => {
+        if (err) {
+            //error handling
+            res.writeHead(501, { 'Content-Type': 'text/plain' });
+            res.end("server encountered an error");
+            return;
+        }
+
+        //success
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end("session updated");
+    });
+});
+
+
+
+app.get('/getnewsession', (req, res) => {
+
+    var locationID = req.query.locationid;
+
+    const sessions = require('./Sessions');
+    let sessionFound = sessions.find((session) => {
+        return session.locationid == locationID && session.state == "waiting";
+    });
+
+    if (!sessionFound || sessionFound == null || sessionFound == undefined) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end("no waiting sessions found");
+        return;
+    }
+
+    res.set("userid", sessionFound.userid);
+    res.set("sessionid", sessionFound.sessionid);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end("waiting session found");
+
+});
+
+app.post('/getnewsession', (req, res) => {
+
+    var locationID = req.body.locationid;
+    if (!locationID || locationID == null || locationID == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("invalid parameters");
+        return;
+    }
+
+    const sessions = require('./Sessions');
+    let sessionFound = sessions.find((session) => {
+        return session.locationid == locationID && session.state == "waiting";
+    });
+
+    if (!sessionFound || sessionFound == null || sessionFound == undefined) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end("no waiting sessions found");
+        return;
+    }
+
+    res.set("userid", sessionFound.userid);
+    res.set("sessionid", sessionFound.sessionid);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end("waiting session found");
+
+});
+
+
 
 //end an active session and adds the score to it
 app.get('/endsession', (req, res) => {
     var userid = req.query.userid;
-    var sessionid = req.query.sessionid;
-    if (!userid || userid == null || userid == undefined || !sessionid || sessionid == null || sessionid == undefined) {
+    var locationid = req.query.locationid;
+    if (!userid || userid == null || userid == undefined || !locationid || locationid == null || locationid == undefined) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
         res.end("invalid parameters");
         return;
@@ -336,7 +461,7 @@ app.get('/endsession', (req, res) => {
 
     //check if the session exists and is associated with the given user
     let sessionfound = sessions.find((session) => {
-        return session.sessionid == sessionid && session.userid == userid;
+        return session.locationid == locationid && session.userid == userid;
     });
 
     if (!sessionfound || sessionfound == null || sessionfound == undefined) {
@@ -346,16 +471,16 @@ app.get('/endsession', (req, res) => {
     }
 
 
-    var score = req.query.score;
-    if (!score || score == null || score == undefined) {
+    var gameState = req.query.gamestate;
+    if (!gameState || gameState == null || gameState == undefined) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
-        res.end("need the score to end the session");
+        res.end("need the game state to end the session");
         return;
     }
 
     //marking session done and adding score
-    sessionfound.active = false;
-    sessionfound.score = score;
+    sessionfound.state = "finished";
+    sessionfound.GameState = gameState;
 
     //writing on file
     fs.writeFile("Sessions.json", JSON.stringify(sessions, null, 2), err => {
@@ -375,8 +500,8 @@ app.get('/endsession', (req, res) => {
 
 app.post('/endsession', (req, res) => {
     var userid = req.body.userid;
-    var sessionid = req.body.sessionid;
-    if (!userid || userid == null || userid == undefined || !sessionid || sessionid == null || sessionid == undefined) {
+    var locationid = req.body.locationid;
+    if (!userid || userid == null || userid == undefined || !locationid || locationid == null || locationid == undefined) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
         res.end("invalid parameters");
         return;
@@ -386,7 +511,7 @@ app.post('/endsession', (req, res) => {
 
     //check if the session exists and is associated with the given user
     let sessionfound = sessions.find((session) => {
-        return session.sessionid == sessionid && session.userid == userid;
+        return session.locationid == locationid && session.userid == userid;
     });
 
     if (!sessionfound || sessionfound == null || sessionfound == undefined) {
@@ -396,16 +521,16 @@ app.post('/endsession', (req, res) => {
     }
 
 
-    var score = req.body.score;
-    if (!score || score == null || score == undefined) {
+    var gameState = req.body.gamestate;
+    if (!gameState || gameState == null || gameState == undefined) {
         res.writeHead(422, { 'Content-Type': 'text/plain' });
-        res.end("need the score to end the session");
+        res.end("need the game state to end the session");
         return;
     }
 
     //marking session done and adding score
-    sessionfound.active = false;
-    sessionfound.score = score;
+    sessionfound.state = "finished";
+    sessionfound.GameState = gameState;
 
     //writing on file
     fs.writeFile("Sessions.json", JSON.stringify(sessions, null, 2), err => {
