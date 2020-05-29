@@ -1,8 +1,8 @@
 [
   {
-    "sessionid": 7586,
-    "userid": "640",
-    "locationid": "2",
+    "sessionid": "c160f5d0-a189-11ea-ac9c-734c1b241a8c",
+    "userid": "9da57dbd-eee3-4ae6-ab24-0e2c40632643",
+    "locationid": "1",
     "state": "finished",
     "GameState": "coins:10;dice:true;"
   }
