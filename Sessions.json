@@ -2,8 +2,21 @@
   {
     "sessionid": "c160f5d0-a189-11ea-ac9c-734c1b241a8c",
     "userid": "9da57dbd-eee3-4ae6-ab24-0e2c40632643",
-    "locationid": "1",
+    "locationid": "2",
     "state": "finished",
     "GameState": "coins:10;dice:true;"
+  },
+  {
+    "sessionid": "c160f5d0-a189-11ea-ac9c-734c1b241a8c",
+    "userid": "9da57dbd-eee3-4ae6-ab24-0e2c40632643",
+    "locationid": "1",
+    "state": "finished",
+    "GameState": "test:10;dice:true;"
+  },
+  {
+    "sessionid": "1360bce0-b084-11ea-bd45-2b152ad1de87",
+    "userid": "9da57dbd-eee3-4ae6-ab24-0e2c40632643",
+    "locationid": "3",
+    "state": "waiting"
   }
 ]
