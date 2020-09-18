@@ -47,6 +47,10 @@ app.post('/register', (req, res) => {
         if (facebookID && facebookID != null && facebookID != undefined)
             user.facebookID = facebookID;
 
+        let googleID = req.body.googleid;
+        if (googleID && googleID != null && googleID != undefined)
+            user.googleID = googleID;
+
         users.push(user);
 
         //writing the updated list
@@ -110,6 +114,49 @@ app.post('/associatefacebook', (req, res) => {
             res.end("your facebook account has been associated");
         });
     });    
+});
+
+
+app.post('/associategoogle', (req, res) => {
+    let userid = req.body.userid;
+    if (!userid || userid == null || userid == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("missing parameter");
+        return;
+    }
+
+    let googleID = req.body.googleid;
+    if (!googleID || googleID == null || googleID == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("missing parameter");
+        return;
+    }
+
+    //const users = require("./Users");
+
+    //check if a user with the id received exists
+    findUserByID(userid, (userFound) => {
+        if (!userFound || userFound == null || userFound == undefined) {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end("user not found");
+            return;
+        }
+
+        //updating the user with the facebook ID and writing on file
+        userFound.googleID = googleID;
+        fs.writeFile("Users.json", JSON.stringify(users, null, 2), err => {
+            // Checking for errors
+            if (err) {
+                res.writeHead(501, { 'Content-Type': 'text/plain' });
+                res.end("server encountered an error");
+                return;
+            }
+
+            //association completed
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end("your facebook account has been associated");
+        });
+    });
 });
 
 
@@ -265,7 +312,7 @@ app.post('/getsessiontoken', (req, res) => {
 });
 
 
-//start start new session for a user at a location if the token is valid
+//start new session for a user at a location if the token is valid
 app.post('/startsessiontoken', (req, res) => {
     let userid = req.body.userid;
     let locationID = req.body.locationid;
@@ -290,7 +337,7 @@ app.post('/startsessiontoken', (req, res) => {
         existsActiveSessionForLocation(locationID, userid, (existsSession) => {
             if (existsSession) {
                 res.writeHead(422, { 'Content-Type': 'text/plain' });
-                res.end("session already done");
+                res.end("session already done or location busy");
                 return;
             }
 
@@ -323,8 +370,10 @@ app.post('/startsessiontoken', (req, res) => {
 
                         //success
                         res.set("sessionid", sessionid);
-                        res.writeHead(200, { 'Content-Type': 'text/plain' });
-                        res.end("session started");
+                        getUserState(userid, (gameStates) => {
+                            res.writeHead(200, { 'Content-Type': 'text/plain' });
+                            res.end(JSON.stringify(gameStates, null, 2));
+                        });
                     });
                 });
             });            
@@ -444,6 +493,64 @@ app.post('/endsession', (req, res) => {
 });
 
 
+app.post('/getactivesessionbylocation', (req, res) => {
+    let locationid = req.body.locationid;
+    if (!locationid || locationid == null || locationid == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("location id needed, req: " + JSON.stringify(req.query));
+        return;
+    }
+
+    findActiveSessionForLocation(locationid, (sessionFound) => {
+        if (!sessionFound || sessionFound == null || sessionFound == undefined) {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end("no sessions found");
+            return;
+        }
+
+        res.set("userid", sessionFound.userid);
+        res.set("sessionid", sessionFound.sessionid);
+        res.set("state", sessionFound.state);
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end("session found");
+    });
+});
+
+
+app.post('/removesessionsbylocation', (req, res) => {
+    let locationid = req.body.locationid;
+    if (!locationid || locationid == null || locationid == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("session id needed");
+        return;
+    }
+
+
+    findSessionsByLocation(locationid, (sessionsFound) => {
+        if (!sessionsFound || sessionsFound == null || sessionsFound == undefined) {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end("session not found");
+            return;
+        }
+
+        sessionsFound.forEach(sessionToDelete => sessions.splice(sessions.indexOf(sessionToDelete), 1));
+
+
+        fs.writeFile("Sessions.json", JSON.stringify(sessions, null, 2), err => {
+            if (err) {
+                //error handling
+                res.writeHead(501, { 'Content-Type': 'text/plain' });
+                res.end("server encountered an error");
+                return;
+            }
+
+            //success
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end("session removed");
+        });
+    });
+});
+
 
 //admin requests
 app.get('/getuser', (req, res) => {
@@ -499,6 +606,10 @@ app.post('/updateuser', (req, res) => {
         if (newData && newData != null || newData != undefined)
             userFound.username = newData;
 
+        newData = req.body.googleid;
+        if (newData && newData != null || newData != undefined)
+            userFound.googleID = newData;
+
         fs.writeFile("Users.json", JSON.stringify(users, null, 2), err => {
             if (err) {
                 //error handling
@@ -535,6 +646,10 @@ app.post('/adduser', (req, res) => {
         let facebookID = req.body.facebookid;
         if (facebookID && facebookID != null && facebookID != undefined)
             user.facebookID = facebookID;
+
+        let googleID = req.body.googleid;
+        if (googleID && googleID != null && googleID != undefined)
+            user.googleID = googleID;
 
         users.push(user);
 
@@ -766,16 +881,16 @@ app.post('/removesession', (req, res) => {
 
 
 
-/*app.listen(port, function () {
+app.listen(1337, function () {
     console.log("server started");
-});*/
+});
 
-https.createServer({
+/*https.createServer({
     key: fs.readFileSync('https_key.key'),
     cert: fs.readFileSync('https_cert.cert')
 }, app).listen(port, function () {
     console.log('server listening on port ' + port)
-});
+});*/
 
 
 
@@ -831,6 +946,13 @@ async function findSessionByID(sessionid, callback) {
     callback(sessionFound);
 }
 
+async function findSessionsByLocation(locationid, callback) {
+    let sessionsFound = sessions.filter((session) => {
+        return session.locationid == locationid;
+    });
+    callback(sessionsFound);
+}
+
 async function getUserState(userid, callback) {
     let userSessions = sessions.filter((session) => {
         return session.userid == userid && session.state == "finished";
@@ -879,6 +1001,12 @@ async function findWaitingSessionForLocation(locationid, callback) {
     callback(sessionFound);
 }
 
+async function findActiveSessionForLocation(locationid, callback) {
+    let sessionFound = sessions.find((session) => {
+        return session.locationid == locationid && (session.state == "waiting" || session.state == "playing");
+    });
+    callback(sessionFound);
+}
 
 //locations
 async function findLocationByID(locationid, callback) {

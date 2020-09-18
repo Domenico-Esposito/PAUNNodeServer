@@ -3,5 +3,30 @@
     "id": "9da57dbd-eee3-4ae6-ab24-0e2c40632643",
     "username": "mario",
     "facebookID": "vincenzo.conte"
+  },
+  {
+    "id": "b777dd3a-c7f4-4598-90fc-07a7604b5be6",
+    "username": "test updated",
+    "googleID": "test_google"
+  },
+  {
+    "id": "4ecf8df7-baf6-4a2a-930c-f6881f5ef370",
+    "username": "Testx1"
+  },
+  {
+    "id": "de8687af-1241-4c79-8183-0d407619b66c",
+    "username": "Testx2"
+  },
+  {
+    "id": "cc25c8c1-3190-4e8f-b124-7b8e76f136c0",
+    "username": "Testx3"
+  },
+  {
+    "id": "4c0a3730-2d71-43c8-8468-354096b8ab43",
+    "username": "Testx3"
+  },
+  {
+    "id": "f5697ac2-2683-48c2-bfd4-c815daa21f25",
+    "username": "Testx3"
   }
 ]
