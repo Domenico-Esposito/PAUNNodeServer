@@ -1,9 +1,9 @@
 [
   {
-    "sessionid": "c160f5d0-a189-11ea-ac9c-734c1b241a8c",
-    "userid": "9da57dbd-eee3-4ae6-ab24-0e2c40632643",
-    "locationid": "1",
+    "sessionid": "98522980-fe58-11ea-be52-3597c4b21f00",
+    "userid": "9c06b417-1cb2-4a5a-aaec-8434c87a6617",
+    "locationid": "2",
     "state": "finished",
-    "GameState": "coins:10;dice:true;"
+    "GameState": "dado:true;coins:5"
   }
 ]
