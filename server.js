@@ -68,7 +68,7 @@ app.post('/register', (req, res) => {
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end("user registration completed");
         });
-    });    
+    });
 
 });
 
@@ -97,7 +97,7 @@ app.post('/associatefacebook', (req, res) => {
             res.writeHead(404, { 'Content-Type': 'text/plain' });
             res.end("user not found");
             return;
-        }        
+        }
 
         //updating the user with the facebook ID and writing on file
         userFound.facebookID = facebookID;
@@ -113,7 +113,7 @@ app.post('/associatefacebook', (req, res) => {
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end("your facebook account has been associated");
         });
-    });    
+    });
 });
 
 
@@ -155,59 +155,6 @@ app.post('/associategoogle', (req, res) => {
             //association completed
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end("your facebook account has been associated");
-        });
-    });
-});
-
-
-app.post('/restartexistingsession', (req, res) => {
-    let userid = req.body.userid;
-    let locationID = req.body.locationid;
-    if (!userid || userid == null || userid == undefined || !locationID || locationID == null || locationID == undefined) {
-        res.writeHead(422, { 'Content-Type': 'text/plain' });
-        res.end("invalid parameters");
-        return;
-    }
-
-    //check if a user with the id received exists
-    existsUserWithID(userid, (existsUser) => {
-        if (!existsUser) {
-            res.writeHead(404, { 'Content-Type': 'text/plain' });
-            res.end("user not found");
-            return;
-        }
-
-        //check if the session already exists
-        findSessionForLocationAndUser(locationID, userid, (sessionFound) => {
-            if (!sessionFound || sessionFound == null || sessionFound == undefined) {
-                res.writeHead(422, { 'Content-Type': 'text/plain' });
-                res.end("no session found");
-                return;
-            }
-
-            if (sessionFound.GameState)
-                res.set("gamestate", sessionFound.GameState);
-
-            if (sessionFound.state == "waiting" || sessionFound.state == "finished") {
-                sessionFound.state = "playing";
-                fs.writeFile("Sessions.json", JSON.stringify(sessions, null, 2), err => {
-                    // Checking for errors
-                    if (err) {
-                        res.writeHead(501, { 'Content-Type': 'text/plain' });
-                        res.end("server encountered an error");
-                        return;
-                    }
-
-                    //association completed
-                    res.writeHead(200, { 'Content-Type': 'text/plain' });
-                    res.end(JSON.stringify(sessionFound, null, 2));
-                });
-            }
-
-            else {
-                res.writeHead(200, { 'Content-Type': 'text/plain' });
-                res.end(JSON.stringify(sessionFound, null, 2));
-            }
         });
     });
 });
@@ -270,8 +217,8 @@ app.post('/startsession', (req, res) => {
                     });
                 });
             });
-        });        
-    });    
+        });
+    });
 });
 
 
@@ -376,7 +323,7 @@ app.post('/startsessiontoken', (req, res) => {
                         });
                     });
                 });
-            });            
+            });
         });
     });
 });
@@ -417,7 +364,7 @@ app.post('/confirmsession', (req, res) => {
                 res.end(JSON.stringify(gameStates, null, 2));
             });
         });
-    });    
+    });
 });
 
 
@@ -601,7 +548,7 @@ app.post('/updateuser', (req, res) => {
         let newData = req.body.facebookid;
         if (newData && newData != null || newData != undefined)
             userFound.facebookID = newData;
-        
+
         newData = req.body.username;
         if (newData && newData != null || newData != undefined)
             userFound.username = newData;
@@ -978,13 +925,6 @@ async function existsSessionForLocationAndUser(locationid, userid, callback) {
         return session.locationid == locationid && session.userid == userid;
     });
     callback(exists);
-}
-
-async function findSessionForLocationAndUser(locationid, userid, callback) {
-    let sessionFound = sessions.find((session) => {
-        return session.locationid == locationid && session.userid == userid;
-    });
-    callback(sessionFound);
 }
 
 async function findSessionForLocationUserAndState(locationid, userid, state, callback) {
