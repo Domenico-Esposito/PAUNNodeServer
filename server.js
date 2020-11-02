@@ -160,6 +160,37 @@ app.post('/associategoogle', (req, res) => {
 });
 
 
+app.get('/checksession', (req, res) => {
+    let userid = req.query.userid;
+    let locationid = req.query.locationid;
+
+    if (!userid || userid == null || userid == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("user id needed");
+        return;
+    }
+
+    if (!locationid || locationid == null || locationid == undefined) {
+        res.writeHead(422, { 'Content-Type': 'text/plain' });
+        res.end("location id needed");
+        return;
+    }
+
+    existsSessionForLocationAndUser(locationid, userid, exists => {
+        if (exists) {
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end("session exists");
+        }
+        else {
+            res.writeHead(404, { 'Content-Type': 'text/plain' });
+            res.end("session does not exist");
+        }
+    });
+
+    
+});
+
+
 //start new session for a user at a location
 app.post('/startsession', (req, res) => {
     let userid = req.body.userid;
@@ -184,7 +215,7 @@ app.post('/startsession', (req, res) => {
         existsActiveSessionForLocation(locationID, userid, (existsSession) => {
             if (existsSession) {
                 res.writeHead(422, { 'Content-Type': 'text/plain' });
-                res.end("session already done");
+                res.end("session already done or location busy");
                 return;
             }
 

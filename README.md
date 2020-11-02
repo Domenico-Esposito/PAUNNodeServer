@@ -37,6 +37,16 @@
   1. 422 in caso di parametri mancanti
   1. 501 in caso di errore del server
 
+### Verifica esistenza sessione
+* Indirizzo: localhost:1337/checksession
+* Tipo di richiesta: GET
+* Parametri:
+  1. userid -> ID utente restituito dalla registrazione
+  1. locationid -> ID della postazione in cui si sta verificando la sessione
+* Errori:
+  1. 404 se la sessione non esite
+  1. 422 in caso di parametri mancanti
+
 ### Inizio sessione
 * Indirizzo: localhost:1337/startsession
 * Tipo di richiesta: POST
