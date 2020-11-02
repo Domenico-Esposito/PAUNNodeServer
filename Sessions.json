@@ -1,9 +1,15 @@
 [
   {
-    "sessionid": "98522980-fe58-11ea-be52-3597c4b21f00",
-    "userid": "9c06b417-1cb2-4a5a-aaec-8434c87a6617",
-    "locationid": "2",
+    "sessionid": "9fa41b00-19d6-11eb-8817-e563fd6d09a1",
+    "userid": "9da57dbd-eee3-4ae6-ab24-0e2c40632643",
+    "locationid": "1",
     "state": "finished",
-    "GameState": "dado:true;coins:5"
+    "GameState": "result:lose;dice_value:40;"
+  },
+  {
+    "sessionid": "ce3bc4e0-1aad-11eb-a188-5fdfade2a847",
+    "userid": "9da57dbd-eee3-4ae6-ab24-0e2c40632643",
+    "locationid": "2",
+    "state": "playing"
   }
 ]
