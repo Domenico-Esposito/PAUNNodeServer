@@ -5,11 +5,5 @@
     "locationid": "1",
     "state": "finished",
     "GameState": "result:lose;dice_value:40;"
-  },
-  {
-    "sessionid": "ce3bc4e0-1aad-11eb-a188-5fdfade2a847",
-    "userid": "9da57dbd-eee3-4ae6-ab24-0e2c40632643",
-    "locationid": "2",
-    "state": "playing"
   }
 ]
